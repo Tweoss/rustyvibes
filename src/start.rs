@@ -1,6 +1,8 @@
 pub mod rustyvibes {
 
-    use rdev::{listen, Event};
+    use std::path::PathBuf;
+use std::path::Path;
+use rdev::{listen, Event};
     use serde_json;
     use serde_json::{Map, Value};
     use std::error::Error;
@@ -82,19 +84,19 @@ pub mod rustyvibes {
                 let key_down = KEY_DEPRESSED
                     .lock()
                     .expect("Can't open key_depressed set")
-                    .insert(key_code.unwrap_or(0));
+                    .insert(key_code.unwrap_or(30));
                 if key_down {
                     let mut dest = match key_code {
                         Some(code) => json_file["defines"][&code.to_string()].to_string(),
                         None => {
-                            println!("Unmapped key: {:?}", key); // for debugging
+                            dbg!("Unmapped key: {:?}", key); // for debugging
                             let default_key = 30; // keycode for 'a'
                             json_file["defines"][&default_key.to_string()].to_string()
                         }
                     };
                     dest.remove(0);
                     dest.remove(dest.len() - 1);
-                    sound::play_sound(format!("{}/{}", directory, dest));
+                    sound::play_sound(Path::new(&directory).join(dest));
                 }
             }
             rdev::EventType::KeyRelease(key) => {
@@ -102,7 +104,7 @@ pub mod rustyvibes {
                 KEY_DEPRESSED
                     .lock()
                     .expect("Can't open key_depressed set for removal")
-                    .remove(&key_code.unwrap_or(0));
+                    .remove(&key_code.unwrap_or(1));
                 // println!("In the future, this'll trigger the keyup sound")
             }
             _ => (),
