@@ -59,7 +59,6 @@ pub mod sound {
                 sink.append(source);
                 sink.detach();
             } else {
-                thread::sleep(Duration::from_millis(100));
                 // Timeout, time to put this thread to sleep to save CPU cycles (open audio OutputStreams use
                 // around half a CPU millicore, and then CoreAudio uses another 7-10%)
                 break;
